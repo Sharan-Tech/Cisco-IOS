@@ -1,0 +1,54 @@
+Cisco IOS Basic SSH Access Configuration
+
+The below config enables the ssh to connect to the cisco based switches/routers securely. 
+SSH Operates on port 22 and the encryption/decryption of the communications is done by the public and private keys we generate. 
+
+This config is of two phases. 
+
+1. Configuring the SSH
+2. Configuring the IP Parameters for the device management. 
+
+() -> explanation of the commands. 
+
+***************************
+
+1. Configuring the SSH
+
+Login to the Console port. 
+
+enable (entering privilege mode)
+conf t (entering global configuration )
+hostname myswitch01
+ip domain-name domain.com (replace it with your domain server, this is required for the generation or RSA Keys. )
+crypto key generate rsa (generating a RSA Key)
+2048 (size of the key , the default is 512, but larger the number, the more secure)
+username admin privilege 15 secret password (Here the privilege 15 means the highest level of access)
+line vty 0 4 (vty means virtual teletype and the numbers specify the range. In this case there can be 5 simultaneous ssh connections to the switch)
+ip ssh version 2
+end 
+wr
+
+***************************
+
+2. Configuring the IP Parameters for the device management. 
+
+The above config enables the SSH feature in the Cisco Devices. Now we have to configure the IP Parameteres, to make the switch accessible over the network. 
+
+	1. specify an interface, typically a management interface. 
+	2. Create a SVI 
+		conf t
+		interface vlan 2 
+		description **MGMT VLAN** 
+		ip address x.x.x.x y.y.y.y (x - ip, y - netmask)
+		no shutdown 
+		exit
+		ip default-gateway x.x.x.x (specify the IP of the gateway of the management network)
+		interface gi0/0/0 (select the interface you want to be the management interface)
+		switchmode mode access
+		switchport access vlan 2 (Creating a L2 VLAN which would be bridged into the SVI of interface VLAN 3)
+		no shutdown
+		end
+
+		wr mem 
+
+Now the switch will be reachable via SSH over the IP you specify in the phase 2 config on the management network. 
