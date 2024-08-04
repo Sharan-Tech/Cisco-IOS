@@ -23,8 +23,11 @@ ip domain-name domain.com (replace it with your domain server, this is required 
 crypto key generate rsa (generating a RSA Key)
 2048 (size of the key , the default is 512, but larger the number, the more secure)
 username admin privilege 15 secret password (Here the privilege 15 means the highest level of access)
-line vty 0 4 (vty means virtual teletype and the numbers specify the range. In this case there can be 5 simultaneous ssh connections to the switch)
+line vty 0 4 (vty means virtual teletype and the numbers specify the range. In this case there can be 5 simultaneous ssh connections to the switch).
+transport input ssh
+privilege level 15
 ip ssh version 2
+login local
 end 
 wr
 
